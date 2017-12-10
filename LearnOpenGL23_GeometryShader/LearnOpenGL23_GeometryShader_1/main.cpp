@@ -6,55 +6,55 @@
 //GLFW
 #include <GLFW/glfw3.h>
 
-//���ڳߴ�
+//窗口尺寸
 const GLuint WIDTH = 800, HEIGHT = 600;
 bool keys[1024];
-//��ǰ֡����һ֡��ʱ���
+//当前帧与上一帧的时间差
 GLfloat deltaTime = 0.0f;
-//��һ֡��ʼ��ʱ��
+//上一帧开始的时间
 GLfloat lastTime = 0.0f;
-//��һ֡���λ��
+//上一帧鼠标位置
 GLfloat lastCursorX = WIDTH / 2;
 GLfloat lastCursorY = HEIGHT / 2;
 
 int main() {
-	//��ʼ��GLFW
+	//初始化GLFW
 	glfwInit();
-	//GLFW����
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //���汾��
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); //�ΰ汾��
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // ���Ŀ���ģʽ
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); //���ڳߴ粻�ɱ�
-											  //�����ܹ�ʹ��GLFW�����Ĵ��ڶ���ָ�룩
+	//GLFW配置
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //主版本号
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); //次版本号
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 核心开发模式
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); //窗口尺寸不可变
+											  //创建能够使用GLFW函数的窗口对象（指针）
 	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", nullptr, nullptr);
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
-	//�������ڻ���
+	//创建窗口环境
 	glfwMakeContextCurrent(window);
-	//�������
+	//隐藏鼠标
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	//��ʼ��GLEW
-	glewExperimental = GL_TRUE; //��֤ʹ���ִ���������OpenGL����
+	//初始化GLEW
+	glewExperimental = GL_TRUE; //保证使用现代技术管理OpenGL机能
 	if (glewInit() != GLEW_OK) {
 		std::cout << "Failed to initialize GLEW" << std::endl;
 		return -1;
 	}
-	//������Ⱦ����λ�ô�С
+	//设置渲染窗口位置大小
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, width, height);
 
 	GLfloat pointsVertices[] = {
-		//λ������   //��ɫ
+		//位置坐标   //颜色
 		0.5f, 0.5f,  1.0f, 0.0f, 0.0f,
 		0.5f,-0.5f,  0.0f, 1.0f, 0.0f,
 		-0.5f,-0.5f,  0.0f, 0.0f, 1.0f,
 		-0.5f, 0.5f,  1.0f, 1.0f, 0.0f
 	};
-	//���pointsVAO�����ݽ���
+	//点的pointsVAO和数据解析
 	GLuint pointsVAO, pointsVBO;
 	glGenVertexArrays(1, &pointsVAO);
 	glBindVertexArray(pointsVAO);
@@ -66,15 +66,15 @@ int main() {
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GL_FLOAT), (GLvoid*)(2 * sizeof(GL_FLOAT)));
 	glBindVertexArray(0);
-	//�����Զ�����ɫ����shader�Ķ���
+	//定义自定义着色器类shader的对象
 	shader points_shader("PointsVS.glsl", "PointsFS.glsl", "PointsGS.glsl");
-	//��Ⱦѭ������Ϸѭ����
+	//渲染循环（游戏循环）
 	while (!glfwWindowShouldClose(window)) {
-		//����deltaTime
+		//计算deltaTime
 		GLfloat currentTime = glfwGetTime();
 		deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
-		glfwPollEvents(); //����Ƿ����¼����������簴�����¡�����ƶ���
+		glfwPollEvents(); //检测是否有事件被触发（如按键按下、鼠标移动）
 		glClearColor(0.3f, 0.4f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		//mat4 view = mycamera.GetViewMatrix();
@@ -82,10 +82,10 @@ int main() {
 		points_shader.Use();
 		glBindVertexArray(pointsVAO);
 		glDrawArrays(GL_POINTS, 0, 4);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		glfwSwapBuffers(window); //������ɫ����
+		glBindVertexArray(0);
+		glfwSwapBuffers(window); //交换颜色缓存
 	}
-	//����CLFW���ͷ���GLFW�������Դ
+	//结束CLFW，释放由GLFW分配的资源
 	glfwTerminate();
 	return 0;
 }
