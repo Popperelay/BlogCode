@@ -4,7 +4,7 @@ in vec3 v2f_WorldPos;
 out vec4 Color_;
 
 //uniform samplerCube u_Cubemap;
-uniform sampler2D u_SphereMap;		//À´×ÔÓÚHDRÌùÍ¼
+uniform sampler2D u_SphereMap;		//æ¥è‡ªäºHDRè´´å›¾
 
 const vec2 InvAtan = vec2(0.1591, 0.3183);  //0.1591 = 1 / (2*PI); 0.3183 = 1 / (PI)
 
@@ -18,6 +18,6 @@ vec2 sampleSphereMap(vec3 v)
 
 void main()
 {
-	vec2 UV = sampleSphereMap(normalize(v2f_WorldPos));	//±ØĞëÒª¹éÒ»»¯
-	Color_ = vec4(v2f_WorldPos.x, 0.0, 0.0, 1.0);
+	vec2 UV = sampleSphereMap(normalize(v2f_WorldPos));	//å¿…é¡»è¦å½’ä¸€åŒ–
+	Color_ = vec4(texture(u_SphereMap, UV).rgb, 1.0);
 }
